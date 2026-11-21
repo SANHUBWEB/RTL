@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f2f2f7" id="tc">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>AAISA CCTV</title>
+<style>
+:root{--bg:#f2f2f7;--card:#fff;--tx:#000;--sub:#6e6e73;--sep:rgba(60,60,67,.16);--glass:rgba(250,250,253,.8);--fld:#eeeef3;--bl:#0a84ff;color-scheme:light}
+:root[data-theme=dark]{--bg:#000;--card:#1c1c1e;--tx:#fff;--sub:#98989f;--sep:rgba(84,84,88,.5);--glass:rgba(28,28,30,.78);--fld:#2c2c2e;color-scheme:dark}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#000;--card:#1c1c1e;--tx:#fff;--sub:#98989f;--sep:rgba(84,84,88,.5);--glass:rgba(28,28,30,.78);--fld:#2c2c2e;color-scheme:dark}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0}
+body{background:var(--bg);color:var(--tx);font:16px/1.4 -apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,Helvetica,Arial,sans-serif;min-height:100dvh}
+body:before{content:"";position:fixed;inset:0;z-index:-1;background:radial-gradient(circle at 8% 0,rgba(10,132,255,.3),transparent 42%),radial-gradient(circle at 96% 8%,rgba(191,90,242,.26),transparent 38%),radial-gradient(circle at 85% 100%,rgba(255,159,10,.24),transparent 42%),radial-gradient(circle at 0 92%,rgba(48,209,88,.22),transparent 38%)}
+button,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer;border:0}
+.shell{display:flex;min-height:100dvh}
+nav{position:fixed;z-index:10;left:0;right:0;bottom:0;display:flex;justify-content:space-around;padding:6px 6px calc(6px + env(safe-area-inset-bottom));background:var(--glass);-webkit-backdrop-filter:saturate(180%) blur(24px);backdrop-filter:saturate(180%) blur(24px);border-top:.5px solid var(--sep)}
+nav .brand{display:none}
+nav button{background:none;color:var(--sub);display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10px;font-weight:600;padding:4px 10px;border-radius:12px}
+nav button b{font-size:22px;font-weight:400;filter:grayscale(1);opacity:.7}
+nav button.on{color:var(--bl)}nav button.on b{filter:none;opacity:1}
+main{flex:1;min-width:0;padding:calc(14px + env(safe-area-inset-top)) 16px 100px;max-width:1200px;margin:auto;width:100%}
+.hd{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin:6px 0 14px}
+h1{font-size:34px;letter-spacing:-.8px;margin:0;font-weight:800}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:6px 11px;border-radius:99px;background:var(--card);border:.5px solid var(--sep);white-space:nowrap}
+.dot{width:8px;height:8px;border-radius:50%;background:#8e8e93}.dot.g{background:#30d158;box-shadow:0 0 8px #30d158}.dot.o{background:#ff9f0a}
+.pg{display:none}.pg.on{display:block}
+.grid{display:grid;grid-template-columns:repeat(var(--c,2),minmax(0,1fr));gap:12px}
+.tile{position:relative;aspect-ratio:16/9;border-radius:20px;overflow:hidden;background:var(--g,linear-gradient(135deg,#0a84ff,#5e5ce6));box-shadow:0 8px 24px rgba(0,0,0,.18)}
+.tile:nth-child(6n+2){--g:linear-gradient(135deg,#bf5af2,#ff375f)}.tile:nth-child(6n+3){--g:linear-gradient(135deg,#ff9f0a,#ff453a)}.tile:nth-child(6n+4){--g:linear-gradient(135deg,#30d158,#0a84ff)}.tile:nth-child(6n+5){--g:linear-gradient(135deg,#64d2ff,#bf5af2)}.tile:nth-child(6n+6){--g:linear-gradient(135deg,#ffd60a,#30d158)}
+.tile:only-child{grid-column:1/-1}
+.tile video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#000}
+.tile .ph{position:absolute;inset:0;display:grid;place-items:center;font-size:34px;opacity:.85}
+.chip{position:absolute;z-index:2;font-size:11px;font-weight:700;color:#fff;padding:4px 9px;border-radius:99px;background:rgba(0,0,0,.45);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.tn{left:10px;top:10px}.st{right:10px;top:10px;background:#ff3b30}.st.w{background:#ff9f0a}.rs{left:10px;bottom:10px}
+.fs{position:absolute;z-index:2;right:8px;bottom:8px;width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,.45);color:#fff;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.empty{text-align:center;padding:40px 20px;border-radius:22px;background:var(--card);border:.5px solid var(--sep);color:var(--sub)}
+.empty b{display:block;color:var(--tx);font-size:19px;margin:8px 0 4px}.empty .big{font-size:46px}
+.grp{background:var(--card);border-radius:16px;margin:0 0 22px;overflow:hidden;border:.5px solid var(--sep)}
+.lbl{font-size:13px;color:var(--sub);margin:18px 14px 7px;font-weight:600}
+.row{display:flex;align-items:center;gap:12px;padding:11px 14px;min-height:48px}.row+.row{border-top:.5px solid var(--sep)}
+.row>span:first-child{flex:0 0 auto}.row small{display:block;color:var(--sub);font-size:12px}
+.ic{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;font-size:17px;color:#fff;flex:0 0 30px}
+.fld{flex:1;min-width:0;text-align:right;background:none;border:0;outline:0;font-size:15px;color:var(--sub)}
+.fld:focus{color:var(--tx)}
+.ta{width:100%;border:0;outline:0;background:var(--fld);border-radius:12px;padding:10px;font-size:13px;min-height:62px;resize:vertical}
+.seg{display:flex;background:var(--fld);border-radius:9px;padding:2px;flex:1;max-width:260px;margin-left:auto}
+.seg button{flex:1;background:none;border-radius:7px;padding:6px 4px;font-size:13px;font-weight:600;color:var(--tx)}
+.seg button.on{background:var(--card);box-shadow:0 1px 4px rgba(0,0,0,.2)}
+.btn{display:block;width:100%;padding:14px;border-radius:14px;font-weight:700;font-size:16px;color:#fff;background:linear-gradient(135deg,#0a84ff,#5e5ce6);margin:0 0 10px}
+.btn.g{background:linear-gradient(135deg,#30d158,#00b3a4)}.btn.r{background:linear-gradient(135deg,#ff453a,#ff375f)}.btn.s{background:var(--card);color:var(--bl);border:.5px solid var(--sep)}
+.btn:active{opacity:.7}.btns{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.code{border-radius:24px;padding:26px 16px;text-align:center;color:#fff;background:linear-gradient(135deg,#0a84ff,#bf5af2 55%,#ff375f);box-shadow:0 12px 30px rgba(94,92,230,.4);margin-bottom:16px}
+.code small{opacity:.85;font-weight:600}.code div{font-size:44px;font-weight:800;letter-spacing:9px;margin:6px 0 0;font-variant-numeric:tabular-nums}
+.pv{width:100%;aspect-ratio:16/9;border-radius:20px;background:#000;object-fit:cover;margin-bottom:14px;box-shadow:0 8px 24px rgba(0,0,0,.2)}
+.sw{position:relative;width:51px;height:31px;flex:0 0 51px}.sw input{opacity:0;position:absolute;inset:0}.sw i{position:absolute;inset:0;background:#78788033;border-radius:99px;transition:.2s}.sw i:after{content:"";position:absolute;left:2px;top:2px;width:27px;height:27px;border-radius:50%;background:#fff;box-shadow:0 2px 4px rgba(0,0,0,.3);transition:.2s}.sw input:checked+i{background:#30d158}.sw input:checked+i:after{transform:translateX(20px)}
+.note{font-size:12px;color:var(--sub);margin:-12px 14px 20px}
+.rv{display:block;width:100%;aspect-ratio:16/9;background:#000;border-radius:16px;object-fit:contain;touch-action:none;margin-bottom:12px;box-shadow:0 8px 24px rgba(0,0,0,.2)}.rv.ctl{outline:3px solid #30d158}
+.toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom));transform:translate(-50%,20px);background:var(--tx);color:var(--bg);padding:10px 18px;border-radius:99px;font-size:14px;font-weight:600;opacity:0;transition:.25s;z-index:50;pointer-events:none;max-width:90vw;text-align:center}.toast.on{opacity:1;transform:translate(-50%,0)}
+@media(min-width:860px){
+nav{top:0;right:auto;bottom:0;width:230px;flex-direction:column;justify-content:flex-start;gap:4px;padding:calc(22px + env(safe-area-inset-top)) 14px;border-top:0;border-right:.5px solid var(--sep)}
+nav .brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:20px;margin:0 6px 20px}
+nav .brand i{width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,#0a84ff,#bf5af2);display:grid;place-items:center;font-style:normal;font-size:20px}
+nav button{flex-direction:row;gap:12px;font-size:15px;padding:10px 12px;width:100%}nav button b{font-size:20px}nav button.on{background:rgba(10,132,255,.14)}
+main{padding:30px 32px 40px;margin-left:230px;max-width:none}.toast{bottom:30px}.pg{max-width:1100px}
+#p3,#p2,#p1{max-width:640px}#p4{max-width:900px}
+}
+@media(max-width:520px){h1{font-size:30px}.grid{gap:8px}.tile{border-radius:14px}.tn{font-size:10px;left:6px;top:6px}.st{right:6px;top:6px}.code div{font-size:36px}}
+</style>
+</head>
+<body>
+<div class="shell">
+<nav id="nav"><div class="brand"><i>◉</i>AAISA CCTV</div>
+<button data-p="0" class="on"><b>📺</b>Live</button><button data-p="1"><b>📷</b>Camera</button><button data-p="4"><b>🖥</b>Remote</button><button data-p="2"><b>🔗</b>Share</button><button data-p="3"><b>⚙️</b>Settings</button></nav>
+<main>
+<section class="pg on" id="p0">
+<div class="hd"><h1>Live</h1><span class="pill"><i class="dot" id="d0"></i><span id="ls">Connecting…</span></span></div>
+<div class="grid" id="grid"></div>
+<div class="empty" id="empty"><div class="big">📡</div><b>No cameras live yet</b>Open this site on another phone or laptop, tap Camera → Start camera, and use code <b id="ec" style="display:inline;font-size:inherit"></b>.</div>
+</section>
+<section class="pg" id="p1">
+<div class="hd"><h1>Camera</h1><span class="pill"><i class="dot" id="d1"></i><span id="cs">Off</span></span></div>
+<video class="pv" id="pv" autoplay muted playsinline></video>
+<div class="grp"><div class="row"><span class="ic" style="background:#ff9f0a">🏷</span><span>Name</span><input class="fld" id="cname" placeholder="Front Door" maxlength="24"></div></div>
+<button class="btn g" id="bstart">Start camera</button>
+<div class="btns"><button class="btn s" id="bflip">Switch camera</button><button class="btn r" id="bstop">Stop</button></div>
+<p class="note" style="margin:6px 4px">Keep this screen open while streaming. Video is sent directly to viewers (peer-to-peer).</p>
+</section>
+<section class="pg" id="p2">
+<div class="hd"><h1>Share</h1></div>
+<div class="code"><small>ACCESS CODE</small><div id="code">------</div></div>
+<div class="btns"><button class="btn" id="bcopy">Copy link</button><button class="btn s" id="bnew">New code</button></div>
+<div class="lbl">JOIN ANOTHER CODE</div>
+<div class="grp"><div class="row"><span class="ic" style="background:#30d158">#</span><input class="fld" id="jc" inputmode="numeric" maxlength="6" placeholder="6-digit code" style="text-align:left"><button class="pill" id="bjoin" style="color:var(--bl)">Join</button></div></div>
+<p class="note">Anyone with the code can watch your cameras. Change it any time with New code.</p>
+</section>
+<section class="pg" id="p3">
+<div class="hd"><h1>Settings</h1></div>
+<div class="lbl">APPEARANCE</div>
+<div class="grp">
+<div class="row"><span class="ic" style="background:#5e5ce6">🌓</span><span>Theme</span><div class="seg" data-k="theme"><button data-v="auto">Auto</button><button data-v="light">Light</button><button data-v="dark">Dark</button></div></div>
+<div class="row"><span class="ic" style="background:#ff375f">▦</span><span>Grid columns</span><div class="seg" data-k="cols"><button data-v="1">1</button><button data-v="2">2</button><button data-v="3">3</button></div></div>
+<div class="row"><span class="ic" style="background:#30d158">🎥</span><span>Camera quality</span><div class="seg" data-k="q"><button data-v="360">360p</button><button data-v="720">720p</button><button data-v="1080">1080p</button></div></div>
+</div>
+<div class="lbl">FIREBASE BACKEND</div>
+<div class="grp">
+<div class="row" style="display:block"><small style="margin-bottom:6px">Already connected to the default database. apiKey is optional. Paste a firebaseConfig only to use another project</small><textarea class="ta" id="paste" placeholder='apiKey: "…", databaseURL: "…"'></textarea></div>
+<div class="row"><span>apiKey</span><input class="fld" id="fb_apiKey" autocomplete="off"></div>
+<div class="row"><span>authDomain</span><input class="fld" id="fb_authDomain" autocomplete="off"></div>
+<div class="row"><span>databaseURL</span><input class="fld" id="fb_databaseURL" autocomplete="off"></div>
+<div class="row"><span>projectId</span><input class="fld" id="fb_projectId" autocomplete="off"></div>
+<div class="row"><span>appId</span><input class="fld" id="fb_appId" autocomplete="off"></div>
+</div>
+<button class="btn" id="bsave">Save Firebase settings</button>
+<div class="btns"><button class="btn s" id="btest">Test connection</button><button class="btn s" id="bclear">Reset to default</button></div>
+<p class="note" style="margin-top:2px">Use Realtime Database. Without Firebase the site runs in local demo mode (same browser only). Rules to paste: <b>{"rules":{"aaisa":{".read":true,".write":true,"$r":{"m":{".indexOn":"t"}}}}}</b></p>
+<div class="lbl">RELAY SERVER (HELPS VIDEO CONNECT ON MOBILE DATA)</div>
+<div class="grp">
+<div class="row"><span class="ic" style="background:#ff9f0a">🌐</span><span>Relay</span><div class="seg" data-k="relay"><button data-v="auto">Auto</button><button data-v="cf">Cloudflare</button><button data-v="custom">Custom</button></div></div>
+<div class="row"><span>Worker URL</span><input class="fld" id="cfurl" placeholder="https://xyz.workers.dev" autocomplete="off"></div>
+<div class="row"><span>Custom TURN</span><input class="fld" id="turn" placeholder="turn:host:3478,user,pass" autocomplete="off"></div>
+</div>
+<p class="note">Cloudflare Realtime: deploy worker.js (see steps) and paste its URL. Auto uses free Google STUN only.</p>
+<div class="btns"><button class="btn s" id="bsets">Save settings</button><button class="btn s" id="brelay">Test relay</button></div>
+
+</section>
+<section class="pg" id="p4">
+<div class="hd"><h1>Remote</h1><span class="pill"><i class="dot" id="d4"></i><span id="rs4">Idle</span></span></div>
+<div class="lbl">SHARE THIS LAPTOP SCREEN</div>
+<div class="grp"><div class="row"><span class="ic" style="background:#30d158">🖥</span><span>Code <b id="rcode"></b><small>Laptop browsers only (Chrome, Edge, Firefox)</small></span></div></div>
+<div class="btns"><button class="btn g" id="bshare">Share screen</button><button class="btn r" id="bsstop">Stop</button></div>
+<div class="lbl">WATCH &amp; CONTROL</div>
+<video class="rv" id="rv" autoplay muted playsinline></video>
+<button class="btn" id="brw">Connect to shared screen</button>
+<div class="grp">
+<div class="row"><span class="ic" style="background:#ff375f">🖱</span><span>Remote control<small>Tap, drag and scroll on the screen</small></span><label class="sw" style="margin-left:auto"><input type="checkbox" id="ctl"><i></i></label></div>
+<div class="row"><span class="ic" style="background:#5e5ce6">⌨️</span><input class="fld" id="kb" placeholder="Tap here to type on remote" autocomplete="off" autocapitalize="off" style="text-align:left"></div>
+</div>
+<button class="btn s" id="bfs">Full screen</button>
+<p class="note" style="margin-top:2px">Browsers cannot move another computer’s mouse. To really control the laptop, run <b>remote_agent.py</b> on it (needs Firebase). Phones cannot share their screen from a browser, but they can watch and control.</p>
+</section>
+</main>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const LS={g(k,d){try{return JSON.parse(localStorage.getItem(k))??d}catch{return d}},s(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch{}}};
+const gen=()=>String(100000+crypto.getRandomValues(new Uint32Array(1))[0]%900000);
+const DEF={databaseURL:'https://realtimelive-a8c1c-default-rtdb.firebaseio.com',projectId:'realtimelive-a8c1c'};
+let cfg=Object.assign({},DEF,LS.g('fb',{})),S=Object.assign({theme:'auto',cols:'2',q:'720',turn:'',name:'',cfurl:''},LS.g('set',{}));S.relay=S.relay||(S.turn?'custom':'auto');
+let code=(new URLSearchParams(location.search).get('code')||'').replace(/\D/g,'').slice(0,6)||LS.g('code',null)||gen();LS.s('code',code);
+const hasFB=()=>!!cfg.databaseURL;
+let tT;function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(tT);tT=setTimeout(()=>t.classList.remove('on'),2400)}
+function applyTheme(){document.documentElement.dataset.theme=S.theme;const dk=S.theme==='dark'||(S.theme==='auto'&&matchMedia('(prefers-color-scheme:dark)').matches);$('#tc').content=dk?'#000':'#f2f2f7';$('#grid').style.setProperty('--c',S.cols);$$('.seg').forEach(g=>$$$('button',g).forEach(b=>b.classList.toggle('on',S[g.dataset.k]===b.dataset.v)))}
+function $$$(s,r){return[...r.querySelectorAll(s)]}
+$$('.seg').forEach(g=>g.onclick=e=>{const b=e.target.closest('button');if(!b)return;S[g.dataset.k]=b.dataset.v;LS.s('set',S);applyTheme();if(g.dataset.k==='relay')refreshIce()});
+matchMedia('(prefers-color-scheme:dark)').addEventListener?.('change',applyTheme);
+function go(p){$$('.pg').forEach((x,i)=>x.classList.toggle('on',i==p));$$('nav button').forEach(b=>b.classList.toggle('on',b.dataset.p==p))}
+$$('nav button').forEach(b=>b.onclick=()=>go(b.dataset.p));
+function showCode(){$('#rcode').textContent=code;$('#code').textContent=code;$('#ec').textContent=code}
+
+/* ---------- signaling bus (Firebase or local demo) ---------- */
+let fbP;function loadFB(){return fbP||(fbP=new Promise((ok,no)=>{if(window.firebase)return ok();const v='10.12.2',b='https://www.gstatic.com/firebasejs/'+v+'/';const a=u=>new Promise((r,j)=>{const s=document.createElement('script');s.src=u;s.onload=r;s.onerror=()=>j(Error('Firebase script blocked'));document.head.appendChild(s)});a(b+'firebase-app-compat.js').then(()=>a(b+'firebase-database-compat.js')).then(ok,no)}))}
+async function openBus(room,onmsg){
+ const id=Math.random().toString(36).slice(2,9),ok=m=>m&&m.from!==id&&(!m.to||m.to===id)&&Date.now()-m.t<20000;
+ if(hasFB()){
+  await loadFB();const app=firebase.apps.length?firebase.app():firebase.initializeApp(cfg);
+  const ref=app.database().ref('aaisa/'+room+'/m'),q=ref.orderByChild('t').startAt(Date.now()-15000);
+  q.on('child_added',s=>{const m=s.val();if(!ok(m))return;if(m.to)s.ref.remove();onmsg(m)});
+  return{id,mode:'Firebase',send(m){const o={...m,from:id,t:Date.now()};ref.push(o).then(r=>setTimeout(()=>r.remove(),30000))},close(){q.off()}};
+ }
+ const bc=new BroadcastChannel('aaisa-'+room);bc.onmessage=e=>{if(ok(e.data))onmsg(e.data)};
+ return{id,mode:'Local demo',send(m){bc.postMessage({...m,from:id,t:Date.now()})},close(){bc.close()}};
+}
+let iceX=null,icep=Promise.resolve();
+function refreshIce(){return icep=(async()=>{iceX=null;if(S.relay!=='cf'||!S.cfurl)return;try{const r=await fetch(S.cfurl),j=await r.json();let v=j.iceServers||j;iceX=(Array.isArray(v)?v:[v]).filter(x=>x&&x.urls);if(!iceX.length){iceX=null;throw 0}}catch{toast('Cloudflare relay not reachable. Using direct.')}})()}
+setInterval(()=>{if(S.relay==='cf')refreshIce()},3000000);
+const ice=()=>{const s=[{urls:['stun:stun.l.google.com:19302','stun:stun1.l.google.com:19302']}];if(S.relay==='cf'&&iceX)s.push(...iceX);else if(S.relay==='custom'){const t=(S.turn||'').split(',').map(x=>x.trim());if(t[0])s.push({urls:t[0],username:t[1]||'',credential:t[2]||''})}return{iceServers:s}};
+const peer=pc=>{let r;return{pc,ready:new Promise(x=>r=x),res:r}};
+const J=JSON.stringify,P=JSON.parse;
+
+/* ---------- viewer ---------- */
+let vb=null,vp={},tiles={};
+function mkTile(id,name){
+ if(tiles[id]){tiles[id].n.textContent=name;return tiles[id]}
+ const el=document.createElement('article');el.className='tile';
+ el.innerHTML='<div class="ph">📷</div><video autoplay muted playsinline></video><span class="chip tn"></span><span class="chip st w">CONNECTING</span><span class="chip rs"></span><button class="fs" aria-label="Full screen">⛶</button>';
+ const t={el,v:$$$('video',el)[0],n:$$$('.tn',el)[0],s:$$$('.st',el)[0],r:$$$('.rs',el)[0]};t.n.textContent=name;
+ t.v.addEventListener('resize',()=>t.r.textContent=t.v.videoWidth+'×'+t.v.videoHeight);
+ t.v.addEventListener('playing',()=>{t.s.textContent='● LIVE';t.s.classList.remove('w');$$$('.ph',el)[0].style.display='none'});
+ const full=()=>{const v=t.v;(el.requestFullscreen||el.webkitRequestFullscreen||(()=>v.webkitEnterFullscreen&&v.webkitEnterFullscreen())).call(el)};
+ $$$('.fs',el)[0].onclick=e=>{e.stopPropagation();full()};el.ondblclick=full;
+ $('#grid').appendChild(el);tiles[id]=t;count();return t}
+function rmTile(id){const t=tiles[id];if(!t)return;t.v.srcObject=null;t.el.remove();delete tiles[id];vp[id]?.pc.close();delete vp[id];count()}
+function count(){const n=Object.keys(tiles).length;$('#empty').style.display=n?'none':'block';$('#ls').textContent=(vb?vb.mode+' · ':'')+(n?n+' live':'Waiting');$('#d0').className='dot '+(n?'g':vb?'o':'')}
+async function watch(){
+ if(vb)vb.close();vb=null;Object.keys(tiles).forEach(rmTile);count();
+ try{vb=await openBus(code,onV);vb.send({k:'viewer-hello'});count()}catch(e){$('#ls').textContent='Backend error';toast('Backend error: '+e.message)}}
+function onV(m){
+ if(m.k==='cam-hello')vb.send({k:'viewer-hello',to:m.from});
+ else if(m.k==='offer')gotOffer(m);
+ else if(m.k==='ice'){const p=vp[m.from];p&&p.ready.then(()=>p.pc.addIceCandidate(P(m.d)).catch(()=>{}))}
+ else if(m.k==='bye')rmTile(m.from)}
+async function gotOffer(m){
+ await icep;const{sdp,name}=P(m.d);vp[m.from]?.pc.close();
+ const pc=new RTCPeerConnection(ice()),p=peer(pc);vp[m.from]=p;const t=mkTile(m.from,name||'Camera');
+ pc.ontrack=e=>{t.v.srcObject=e.streams[0];t.v.play().catch(()=>{})};
+ pc.onicecandidate=e=>e.candidate&&vb.send({k:'ice',to:m.from,d:J(e.candidate)});
+ pc.onconnectionstatechange=()=>{const s=pc.connectionState;if(s==='disconnected'){t.s.textContent='RECONNECTING';t.s.classList.add('w')}
+  if(s==='failed'||s==='closed')setTimeout(()=>{if(vp[m.from]===p){rmTile(m.from);vb&&vb.send({k:'viewer-hello',to:m.from})}},2500)};
+ await pc.setRemoteDescription(sdp);p.res();const a=await pc.createAnswer();await pc.setLocalDescription(a);vb.send({k:'answer',to:m.from,d:J(a)})}
+
+/* ---------- camera ---------- */
+let cb=null,cs=null,cp={},facing='environment',wl=null;
+const QS={360:[640,360],720:[1280,720],1080:[1920,1080]};
+const getCam=()=>{const[w,h]=QS[S.q]||QS[720];return navigator.mediaDevices.getUserMedia({video:{facingMode:facing,width:{ideal:w},height:{ideal:h},frameRate:{ideal:24,max:30}},audio:false})};
+function cstat(){const n=Object.values(cp).filter(p=>p.pc.connectionState==='connected').length;$('#cs').textContent=cs?(n?n+' watching':'Live · waiting'):'Off';$('#d1').className='dot '+(cs?(n?'g':'o'):'')}
+async function startCam(){
+ if(cs)return;if(!navigator.mediaDevices?.getUserMedia)return toast('Camera needs HTTPS (GitHub Pages is fine)');
+ try{cs=await getCam()}catch(e){return toast('Camera blocked: allow permission')}
+ $('#pv').srcObject=cs;S.name=$('#cname').value.trim()||'Camera';LS.s('set',S);
+ try{cb=await openBus(code,onC)}catch(e){cs.getTracks().forEach(t=>t.stop());cs=null;return toast('Backend error: '+e.message)}
+ cb.send({k:'cam-hello'});cstat();try{wl=await navigator.wakeLock?.request('screen')}catch{}}
+function onC(m){
+ if(m.k==='viewer-hello')offerTo(m.from);
+ else if(m.k==='answer'){const p=cp[m.from];p&&p.pc.setRemoteDescription(P(m.d)).then(p.res)}
+ else if(m.k==='ice'){const p=cp[m.from];p&&p.ready.then(()=>p.pc.addIceCandidate(P(m.d)).catch(()=>{}))}}
+async function offerTo(v){
+ await icep;cp[v]?.pc.close();const pc=new RTCPeerConnection(ice()),p=peer(pc);cp[v]=p;
+ cs.getTracks().forEach(t=>pc.addTrack(t,cs));
+ pc.onicecandidate=e=>e.candidate&&cb.send({k:'ice',to:v,d:J(e.candidate)});
+ pc.onconnectionstatechange=()=>{if(['failed','closed'].includes(pc.connectionState)&&cp[v]===p)delete cp[v];cstat()};
+ const o=await pc.createOffer();await pc.setLocalDescription(o);cb.send({k:'offer',to:v,d:J({sdp:o,name:S.name})})}
+function stopCam(){if(!cb&&!cs)return;try{cb&&cb.send({k:'bye'})}catch{}
+ setTimeout(()=>cb&&cb.close(),300);Object.values(cp).forEach(p=>p.pc.close());cp={};cs&&cs.getTracks().forEach(t=>t.stop());cs=null;cb=null;$('#pv').srcObject=null;wl&&wl.release?.();cstat()}
+async function flip(){if(!cs)return toast('Start the camera first');facing=facing==='user'?'environment':'user';
+ try{const n=await getCam();const tr=n.getVideoTracks()[0];Object.values(cp).forEach(p=>p.pc.getSenders().forEach(s=>s.replaceTrack(tr)));cs.getTracks().forEach(t=>t.stop());cs=n;$('#pv').srcObject=n}catch{toast('Other camera not available')}}
+$('#bstart').onclick=startCam;$('#bstop').onclick=stopCam;$('#bflip').onclick=flip;
+addEventListener('pagehide',()=>{try{cb&&cb.send({k:'bye'})}catch{}try{hb&&hb.send({k:'bye'})}catch{}});
+
+/* ---------- share ---------- */
+function copy(t){if(navigator.clipboard&&isSecureContext)navigator.clipboard.writeText(t).then(()=>toast('Copied'),()=>toast('Copy failed'));else{const i=document.createElement('input');i.value=t;document.body.appendChild(i);i.select();try{document.execCommand('copy');toast('Copied')}catch{toast('Copy failed')}i.remove()}}
+const link=()=>location.origin+location.pathname+'?code='+code;
+async function setCode(c){const was=!!cs;if(was)stopCam();code=c;LS.s('code',c);showCode();stopShare();if(rb)rWatch();await watch();if(was)toast('Code changed. Start camera again.');else toast('Code: '+c)}
+$('#bcopy').onclick=()=>copy(link());$('#bnew').onclick=()=>setCode(gen());
+$('#jc').oninput=e=>e.target.value=e.target.value.replace(/\D/g,'').slice(0,6);
+$('#bjoin').onclick=()=>{const v=$('#jc').value;if(v.length!==6)return toast('Enter all 6 digits');setCode(v);$('#jc').value=''};
+
+/* ---------- settings ---------- */
+const FK=['apiKey','authDomain','databaseURL','projectId','appId'];
+FK.forEach(k=>$('#fb_'+k).value=cfg[k]||'');$('#turn').value=S.turn||'';$('#cfurl').value=S.cfurl||'';$('#cname').value=S.name||'';
+$('#paste').oninput=e=>{[...e.target.value.matchAll(/(\w+)\s*:\s*["']([^"']+)["']/g)].forEach(([,k,v])=>{const i=$('#fb_'+k);if(i)i.value=v.trim()})};
+const readFB=()=>Object.fromEntries(FK.map(k=>[k,$('#fb_'+k).value.trim()]).filter(x=>x[1]));
+$('#bsave').onclick=()=>{const c=readFB();if(!c.databaseURL)return toast('databaseURL is required');LS.s('fb',c);toast('Saved. Reloading…');setTimeout(()=>location.reload(),700)};
+$('#bclear').onclick=()=>{LS.s('fb',{});toast('Default Firebase restored. Reloading…');setTimeout(()=>location.reload(),700)};
+$('#bsets').onclick=()=>{S.turn=$('#turn').value.trim();S.cfurl=$('#cfurl').value.trim();LS.s('set',S);refreshIce();toast('Settings saved')};
+$('#brelay').onclick=async()=>{S.turn=$('#turn').value.trim();S.cfurl=$('#cfurl').value.trim();LS.s('set',S);if(S.relay==='cf'){toast('Testing…');await refreshIce();if(iceX)toast('✓ Cloudflare relay ready')}else toast(S.relay==='custom'?(S.turn?'Custom TURN saved':'Enter a TURN value'):'Select Cloudflare or Custom first')};
+$('#btest').onclick=async()=>{const c=readFB();if(!c.databaseURL)return toast('Fill databaseURL');toast('Testing…');
+ try{await loadFB();const a=firebase.initializeApp(c,'t'+Date.now());await Promise.race([a.database().ref('aaisa/_ping').set(Date.now()),new Promise((_,r)=>setTimeout(()=>r(Error('Timeout: check URL and rules')),7000))]);a.delete();toast('✓ Firebase connected')}catch(e){toast('✗ '+(e.message||'Failed').slice(0,70))}};
+
+/* ---------- remote desktop ---------- */
+const RR=()=>code+'r';
+let hb=null,hs=null,hp={},rb=null,rp=null,rc=false;
+function rstat(){const n=Object.values(hp).filter(p=>p.pc.connectionState==='connected').length;$('#rs4').textContent=hs?(n?'Sharing · '+n+' watching':'Sharing · waiting'):rb?(rp?'Watching':'Waiting for host'):'Idle';$('#d4').className='dot '+(((hs&&n)||rp)?'g':(hs||rb)?'o':'')}
+async function shareScreen(){
+ if(hs)return;if(!navigator.mediaDevices?.getDisplayMedia)return toast('Screen share needs a laptop browser. Phones can only watch and control.');
+ try{hs=await navigator.mediaDevices.getDisplayMedia({video:{frameRate:{ideal:15,max:30}},audio:false})}catch{return toast('Screen share cancelled')}
+ hs.getVideoTracks()[0].onended=stopShare;
+ try{hb=await openBus(RR(),onH)}catch(e){hs.getTracks().forEach(t=>t.stop());hs=null;return toast('Backend error: '+e.message)}
+ hb.send({k:'host-hello'});rstat()}
+function onH(m){
+ if(m.k==='viewer-hello')hOffer(m.from);
+ else if(m.k==='answer'){const p=hp[m.from];p&&p.pc.setRemoteDescription(P(m.d)).then(p.res)}
+ else if(m.k==='ice'){const p=hp[m.from];p&&p.ready.then(()=>p.pc.addIceCandidate(P(m.d)).catch(()=>{}))}}
+async function hOffer(v){
+ await icep;hp[v]?.pc.close();const pc=new RTCPeerConnection(ice()),p=peer(pc);hp[v]=p;
+ hs.getTracks().forEach(t=>pc.addTrack(t,hs));
+ pc.onicecandidate=e=>e.candidate&&hb.send({k:'ice',to:v,d:J(e.candidate)});
+ pc.onconnectionstatechange=()=>{if(['failed','closed'].includes(pc.connectionState)&&hp[v]===p)delete hp[v];rstat()};
+ const o=await pc.createOffer();await pc.setLocalDescription(o);hb.send({k:'offer',to:v,d:J({sdp:o})})}
+function stopShare(){if(!hs)return;try{hb.send({k:'bye'})}catch{}const b=hb;setTimeout(()=>b&&b.close(),300);Object.values(hp).forEach(p=>p.pc.close());hp={};hs.getTracks().forEach(t=>t.stop());hs=null;hb=null;rstat()}
+async function rWatch(){
+ if(rb)rb.close();rp=null;
+ try{rb=await openBus(RR(),onR)}catch(e){return toast('Backend error: '+e.message)}
+ rb.send({k:'viewer-hello'});rstat()}
+function onR(m){
+ if(m.k==='host-hello')rb.send({k:'viewer-hello',to:m.from});
+ else if(m.k==='offer')rOffer(m);
+ else if(m.k==='ice'){const p=rp;p&&m.from===p.id&&p.ready.then(()=>p.pc.addIceCandidate(P(m.d)).catch(()=>{}))}
+ else if(m.k==='bye'){$('#rv').srcObject=null;rp=null;rstat()}}
+async function rOffer(m){
+ await icep;const{sdp}=P(m.d);rp?.pc.close();const pc=new RTCPeerConnection(ice()),p=peer(pc);p.id=m.from;rp=p;
+ pc.ontrack=e=>{const v=$('#rv');v.srcObject=e.streams[0];v.play().catch(()=>{});rstat()};
+ pc.onicecandidate=e=>e.candidate&&rb.send({k:'ice',to:m.from,d:J(e.candidate)});
+ pc.onconnectionstatechange=()=>{if(['failed','closed'].includes(pc.connectionState)&&rp===p){rp=null;rstat()}};
+ await pc.setRemoteDescription(sdp);p.res();const a=await pc.createAnswer();await pc.setLocalDescription(a);rb.send({k:'answer',to:m.from,d:J(a)})}
+const rv=$('#rv');let lm=0;
+const snd=o=>rb&&rc&&rb.send({k:'ctl',d:J(o)});
+function np(e){const w=rv.videoWidth,h=rv.videoHeight;if(!w)return null;const r=rv.getBoundingClientRect(),s=Math.min(r.width/w,r.height/h),x=(e.clientX-r.left-(r.width-w*s)/2)/(w*s),y=(e.clientY-r.top-(r.height-h*s)/2)/(h*s);return x<0||y<0||x>1||y>1?null:{x:+x.toFixed(4),y:+y.toFixed(4)}}
+rv.addEventListener('pointermove',e=>{const n=Date.now();if(n-lm<60)return;const q=np(e);if(q){lm=n;snd({a:'mv',...q})}});
+rv.addEventListener('pointerdown',e=>{const q=np(e);if(q)snd({a:'dn',b:e.button,...q})});
+rv.addEventListener('pointerup',e=>snd({a:'up',b:e.button,...(np(e)||{})}));
+rv.addEventListener('wheel',e=>{if(rc){e.preventDefault();snd({a:'wh',dy:e.deltaY})}},{passive:false});
+rv.addEventListener('contextmenu',e=>rc&&e.preventDefault());
+const KM={Enter:1,Backspace:1,Tab:1,Escape:1,ArrowUp:1,ArrowDown:1,ArrowLeft:1,ArrowRight:1,Delete:1};
+$('#kb').onkeydown=e=>{if(KM[e.key]){e.preventDefault();snd({a:'key',k:e.key})}};
+$('#kb').oninput=e=>{if(e.data)snd({a:'key',k:e.data});e.target.value=''};
+$('#ctl').onchange=e=>{rc=e.target.checked;rv.classList.toggle('ctl',rc);if(rc&&!hasFB())toast('Control from other devices needs Firebase')};
+$('#bshare').onclick=shareScreen;$('#bsstop').onclick=stopShare;$('#brw').onclick=rWatch;
+$('#bfs').onclick=()=>(rv.requestFullscreen||rv.webkitRequestFullscreen||rv.webkitEnterFullscreen||(()=>toast('Full screen not supported'))).call(rv);
+
+applyTheme();showCode();count();refreshIce();watch();
+</script>
+</body>
+</html>
